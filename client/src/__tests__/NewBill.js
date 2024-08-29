@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen } from "@testing-library/dom";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import NewBill from "../containers/NewBill.js";
 import mockStore from "../__mocks__/store";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
@@ -211,6 +211,35 @@ describe("Given I am connected as an employee", () => {
       expect(inputDate.validity.valid).not.toBeTruthy();
       expect(inputAmount.validity.valid).not.toBeTruthy();
       expect(inputPct.validity.valid).not.toBeTruthy();
+    });
+  });
+
+  // Test d'intégration POST
+  describe("When I post a new bill", () => {
+    test("Then the new bill should be added to the other bills", async () => {
+      jest.spyOn(mockStore, "bills");
+
+      const bills = await mockStore.bills().list();
+
+      expect(bills.length).toEqual(4);
+
+      const newBillTest = {
+        email: "employee@test.tld",
+        type: "Transports",
+        name: "Vol Paris-New York",
+        amount: "1375",
+        date: "2023-05-16",
+        vat: "255",
+        pct: "20",
+        commentary: "Vol reunion client USA",
+        fileUrl: undefined,
+        fileName: "test.png",
+        status: "pending",
+      };
+
+      mockStore.bills().create(newBillTest);
+
+      waitFor(() => expect(bills.length).toEqual(5));
     });
   });
 });
