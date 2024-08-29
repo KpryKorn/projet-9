@@ -17,17 +17,22 @@ export default class NewBill {
     this.billId = null;
     new Logout({ document, localStorage, onNavigate });
   }
+
+  allowedExtensions(mimeType) {
+    return ["image/jpeg", "image/jpg", "image/png", "image/gif"].includes(
+      mimeType
+    );
+  }
   handleChangeFile = (e) => {
     e.preventDefault();
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-      .files[0];
+    const input = this.document.querySelector(`input[data-testid="file"]`);
+    const file = input.files[0];
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-
-    const fileExtension = fileName.split(".").pop().toLowerCase();
-    const allowedExtensions = ["jpg", "jpeg", "png"];
-    if (!allowedExtensions.includes(fileExtension)) {
-      alert("Seuls les fichiers .jpg, .jpeg et .png sont autorisés.");
+    // vérifiacation de l'extention de fichier
+    if (!this.allowedExtensions(file.type)) {
+      input.value = "";
+      console.log("veuillez choisir un des format img");
       return;
     }
 
@@ -45,14 +50,12 @@ export default class NewBill {
         },
       })
       .then(({ fileUrl, key }) => {
-        console.log(fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
       })
       .catch((error) => console.error(error));
   };
-
   handleSubmit = (e) => {
     e.preventDefault();
     console.log(
