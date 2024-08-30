@@ -221,6 +221,7 @@ describe("Given I am connected as an employee", () => {
 
       const bills = await mockStore.bills().list();
 
+      // On s'attend à 4 factures pre-test
       expect(bills.length).toEqual(4);
 
       const newBillTest = {
@@ -239,6 +240,7 @@ describe("Given I am connected as an employee", () => {
 
       mockStore.bills().create(newBillTest);
 
+      // On s'attend à 5 factures post-test
       waitFor(() => expect(bills.length).toEqual(5));
     });
   });
